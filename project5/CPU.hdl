@@ -1,0 +1,29 @@
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    Mux16(a=aluout , b=instruction , sel=instruction[0] , out=mux1 );
+    Register(in=mux1 , load=instruction[0] , out=areg ); // does the value from the ALU go to the A register?
+    Mux16(a=areg , b=inM , sel=instruction[0] , out=mux2 ); // is it A or C instruction?
+    Register(in=aluout , load=instruction[1] , out=dreg ); // does the value from the ALU go to the D register? 
+    ALU(x=dreg , y=mux2 , zx=instruction[4] , nx=instruction[5] , zy=instruction[6] , ny=instruction[7] , f=instruction[8] , no=instruction[9] , out=aluout , zr=j2 , ng=j1 );
+    And(a=j1 , b=instruction[13] , out=negbit ); // determining whether the computed ALU zr and ng bits correspond to the j1 and j2 bits from the instruction
+    And(a=j2 , b=instruction[14] , out=zerbit ); 
+    Or(a=j1 , b=j2 , out=orout ); 
+    Not(in=orout , out=j3 ); // computing the positive bit 
+    And(a=j3 , b=instruction[15] , out=posbit ); // checking if it aligns
+    Or(a=orout , b=j3 , out=pcload ); // creating the final bit that decides whether it is a jump or not
+    PC(in=areg , load=pcload , inc=true , reset=reset , out=pc16 ); // how to extract the 13th bit?
+    
+
+}
