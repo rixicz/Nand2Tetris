@@ -12,26 +12,40 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
+    // here is the main architecture excluding the control part (Program Counter)
     Mux16(a=instruction , b=aluout , sel=instruction[15] , out=mux1 ); // is it an A or a C instruction?
     Register(in=mux1 , load=instruction[5] , out=areg, out[0..14]=addressM ); // does the value from the ALU go to the A register?
     Mux16(a=areg , b=inM , sel=instruction[12] , out=mux2 ); // do I get input from inM or areg?
     Register(in=aluout , load=instruction[4] , out=dreg ); // does the value from the ALU go to the D register? - hmm, according to the output file, nothing goes into the dreg
     ALU(x=dreg , y=mux2 , zx=instruction[11] , nx=instruction[10] , zy=instruction[9] , ny=instruction[8] , f=instruction[7] , no=instruction[6] , out=aluout , zr=zr , ng=ng );
-    Xor(a=ng , b=instruction[2] , out=notj1 ); // determining whether the computed ALU zr and ng bits correspond to the j1 and j2 bits from the instruction
-    Xor(a=zr , b=instruction[1] , out=notj2 );
-    Not(in=notj1 , out=j1 );
-    Not(in=notj2 , out=j2 ); // have to convert it
+    
+    // here I compute the bits that determine the jump
+    Xor(a=ng , b=instruction[2] , out=notb1 ); // determining whether the computed ALU zr and ng bits correspond to the j1 and j2 bits from the instruction
+    Xor(a=zr , b=instruction[1] , out=notb2 );
+    Not(in=notb1 , out=b1 );
+    Not(in=notb2 , out=b2 ); // have to convert it
     Or(a=ng , b=zr , out=orout ); 
     Not(in=orout , out=posbit ); // computing the positive bit 
-    Xor(a=posbit , b=instruction[0] , out=notj3 ); // checking if it aligns
-    Not(in=notj3 , out=j3 ); 
-    Or(a=j1 , b=j2 , out=j12 ); // is at least one of the conditions true:
-    Or(a=j12 , b=j3 , out=j123 ); // creating the final bit that decides whether it is a jump or not
-    Or(a=instruction[0] , b=instruction[1] , out=orj23 );
-    Or(a=instruction[2] , b=orj23 , out=isit0 ); // checking if there is not a condition that says, no jump
-    And(a=isit0 , b=j123 , out=pcload );
-    PC(in=areg , load=pcload , inc=true , reset=reset , out[0..14]=pc); // how to extract the 1st bit - the op code? - what if j1, j2 and j3 are zero? or what if the condition is JGT or JLT - then this doesn't work because it is too inclusive
-    Mux16(a=false , b=aluout , sel=instruction[3] , out=outM );
+    Xor(a=posbit , b=instruction[0] , out=notb3 ); // checking if it aligns
+    Not(in=notb3 , out=b3 );
+    
+    // here I design the logic that involves the b bits
+    Xor(a=b1 , b=b2 , out=bx12 );
+    Xor(a=bx12 , b=b3 , out=bx123 );
+    Not(in=bx123 , out=finxbit ); // if there are two 1s, then the final bit is also one
+    Or(a=b1 , b=b2 , out=bo12 ); 
+    Or(a=bo12 , b=b3 , out=bo123 ); 
+    And(a=finxbit , b=bo123 , out=alignout ); // eliminating all combnations of bs (bits) except for 110, 011, 101
+    And(a=b1 , b=b2 , out=ba12 );
+    And(a=ba12 , b=b3 , out=ba123); // checking for 111
+    Or(a=ba123 , b=alignout , out=blogic ); // includiing 111 to the possbile b arrays
+    
+    // here I am working with the jump bits
+    And(a=instruction[0] , b=instruction[1] , out=orj23 );
+    And(a=instruction[2] , b=orj23 , out=isit111 ); // checking for the J exception 111
+    Or(a=isit111, b=blogic , out=pcload ); // including the exception by adding an Or gate and finally computing the pcload
+    
+    PC(in=areg , load=pcload , inc=true , reset=reset , out[0..14]=pc); 
     
 
 }
