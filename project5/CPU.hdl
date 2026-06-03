@@ -12,13 +12,17 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    Register(in=instruction, load=instruction[15] , out=Creg, out[5]=loada, out[12]=useM, out[11]=c1, out[10]=c2, out[9]=c3, out[8]=c4, out[7]=c5, out[6]=c6, out[2]=j1, out[1]=j2, out[0]=j3, out[4]=loadD );
-    Mux(a=true , b=loada , sel=instruction[15] , out=loadA );
+    Mux16(a=false, b=instruction, sel=instruction[15] , out=Creg, out[5]=loada, 
+        out[12]=useM, out[11]=c1, out[10]=c2, out[9]=c3, out[8]=c4, out[7]=c5, out[6]=c6, 
+        out[2]=j1, out[1]=j2, out[0]=j3, out[4]=loadD, out[3]=writeM ); // is it gonna load the control bits from the C instruction or are they just gonna be zero?
+    Mux(a=true , b=loada , sel=instruction[15] , out=loadA ); // load into the A register if there is a new A instruction, if there is none, then check the load bit provided by the C instruction
     Mux16(a=instruction , b=aluout , sel=instruction[15] , out=mux1 ); // am I going to load the value from alout or from the new instruction?
     ARegister(in=mux1 , load=loadA , out=areg, out[0..14]=addressM ); // does the value from the ALU go to the A register?
     Mux16(a=areg , b=inM , sel=useM , out=mux2 ); // do I get input from inM or areg?
     DRegister(in=aluout , load=loadD , out=dreg ); // does the value from the ALU go to the D register? - hmm, according to the output file, nothing goes into the dreg
-    ALU(x=dreg , y=mux2 , zx=c1 , nx=c2 , zy=c3 , ny=c4 , f=c5 , no=c6 , out=aluout , zr=zr , ng=ng );
+    
+    ALU(x=dreg , y=mux2 , zx=c1 , nx=c2 , zy=c3 , ny=c4 , f=c5 , no=c6 , 
+        out=aluout, out=outM , zr=zr , ng=ng ); // into this ALU are fed the control bits to compute the value
     
     // here I compute the bits that determine the jump
     Xor(a=ng , b=j1 , out=notb1 ); // determining whether the computed ALU zr and ng bits correspond to the j1 and j2 bits from the instruction
@@ -50,6 +54,4 @@ CHIP CPU {
     Or(a=j1orj2 , b=j3 , out=isit000 );
     And(a=isit000 , b=alfin , out=pcload ); // watching out for the combination of 000 in j bits - debugging the beginning of the execution
     PC(in=areg , load=pcload , inc=true , reset=reset , out[0..14]=pc); 
-    
-
 }
