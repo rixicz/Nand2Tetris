@@ -24,7 +24,7 @@ It is divided into two major parts containing 12 projects in total.
 
 </div>
 
-## How to test this out
+## How To Test This Out
 
 Here is a step-by-step breakdown of how to test this code out:
 
