@@ -54,7 +54,7 @@ jump_values = {
 }
 
 def cleaner(filename): # takes all the instructions only and saves it into a list
-    with open(filename) as asm:
+    with open("asm_programs/" + filename) as asm:
         pure_code = []
         for line in asm:
             line = line.strip()
@@ -114,7 +114,7 @@ while len(pure_code) > len(machine_list):
 print(machine_list)
 machine_instructions = "".join(map(str, machine_list))
 print(machine_instructions)
-with open(file_out, "w") as f:
+with open("hack_programs/" + file_out, "w") as f:
   f.write(machine_instructions)
 
 
