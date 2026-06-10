@@ -1,5 +1,10 @@
 # This code is supposed to take the assembly input, parse it into different fields and then code the assembly into binary
 # Firstly, I need to declare the codes for each possible field in the instruction
+
+symbol_table = {
+
+}
+
 comp_values = {
     "0": 42,
     "1": 63,
@@ -71,11 +76,11 @@ def parser(instruction): # parses the instructions and codes the fields into bin
 
         if "@" in instruction:
             val = int(instruction[1:]) # ignores the @ and puts the value into a var
-        else:
+        elif "=" in instruction:
             val = instruction.split("=")
 
-            if ";" in val:
-               val[1].split(";")
+        elif ";" in instruction:
+            val = instruction.split(";")
 
         return val
  
@@ -84,12 +89,16 @@ def coder(val, dest_values, comp_values, jump_values):
         bcode = bin(val)[2:].zfill(16) # converting the integer into a 16-bit binary string
             
 
+    elif 'J' in val[1]:
+        val[0] = comp_values[val[0]]
+        val[1] = jump_values[val[1]]
+        bcode = bin(int("".join(map(str, val))))[2:].zfill(16) # joins the bits together
+    
     else:
         val[0] = dest_values[val[0]]
         val[1] = comp_values[val[1]]
 
-        if len(val) > 2:
-                val[2] = jump_values[val[2]]
+        
             
         bcode = bin(int("".join(map(str, val))))[2:].zfill(16) # joins the bits together
     
