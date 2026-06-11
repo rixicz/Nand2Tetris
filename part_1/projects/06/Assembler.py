@@ -1,5 +1,7 @@
 # This code is supposed to take the assembly input, parse it into different fields and then code the assembly into binary
 # Firstly, I need to declare the codes for each possible field in the instruction
+import re 
+
 
 symbol_table = {
 
@@ -83,20 +85,27 @@ symbol_table = {
     "THIS": 3,
     "THAT": 4
 }
-
-def cleaner(filename): # takes all the instructions only and saves it into a list
+    
+def scanner(filename): # takes all the instructions only and saves it into a list
     with open("asm_programs/" + filename) as asm:
-        pure_code = []
+        code = []
         for line in asm:
             line = line.strip()
             if not line:
                 continue
             if line.startswith("//"): # deals only with inline comments
                 continue
-            
-            pure_code.append(line)
+            code.append(line)
 
-    return pure_code
+    return code
+
+def symbols(code, table):
+    pure_code = []
+    for element in code:
+        if "(" in element:
+            label = element[1:-1]
+            print(label)
+
 
 def parser(instruction): # parses the instructions and codes the fields into binary
 
@@ -135,7 +144,7 @@ def coder(val, dest_values, comp_values, jump_values):
         
 file_in = input("Input file: ")
 file_out = input("Output file: ")
-pure_code = cleaner(file_in)
+pure_code = scanner(file_in)
 print(pure_code)
 machine_list = []
 while len(pure_code) > len(machine_list):
