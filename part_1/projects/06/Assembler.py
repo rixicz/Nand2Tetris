@@ -1,11 +1,5 @@
 # This code is supposed to take the assembly input, parse it into different fields and then code the assembly into binary
-# Firstly, I need to declare the codes for each possible field in the instruction
-import re 
-
-
-symbol_table = {
-
-}
+# Firstly, I need to declare the codes for each possible field in the instruction. For that I use dictionaries
 
 comp_values = {
     "0": 42,
@@ -86,55 +80,85 @@ symbol_table = {
     "THAT": 4
 }
     
-def scanner(filename): # takes all the instructions only and saves it into a list
+def cleaner(filename): # takes all the instructions only and saves it into a list
     with open("asm_programs/" + filename) as asm:
         code = []
         for line in asm:
             line = line.strip()
             if not line:
                 continue
-            if line.startswith("//"): # deals only with inline comments
+            
+            if line.startswith("//"): # deals only with comments on a new line
                 continue
+            
+            elif "/" in line: # eliminates inline comments
+                c_list = line.split("//", 1)
+                line = c_list.pop(0)
+                line = line.strip()
+            
             code.append(line)
 
     return code
 
-def symbols(code, table):
-    pure_code = []
+def scanner(code, table): # function that looks for labels or symbols and writes their value into the symbol_table
+    ns_code = []
+    i = 1
+    n = 16
     for element in code:
         if "(" in element:
+            
             label = element[1:-1]
-            print(label)
+            symbol_table[label] = i 
+        
+        elif "@" in element:
+            val = element[1:]
+            
+            if not isinstance(val, int):
+                
+                if val not in symbol_table:
+                    symbol_table[val] = n
+                    n += 1
+        else:   
+            ns_code.append(element)
+        
+        i += 1
+    
+    return ns_code
 
 
-def parser(instruction): # parses the instructions and codes the fields into binary
+def parser(instruction): # parses the instructions into fields
 
         if "@" in instruction:
-            val = int(instruction[1:]) # ignores the @ and puts the value into a var
+            val = instruction[1:] # ignores the @ and puts the value into a var
         elif "=" in instruction:
             val = instruction.split("=")
 
         elif ";" in instruction:
             val = instruction.split(";")
+        else:
+            val = instruction
 
         return val
  
 def coder(val, dest_values, comp_values, jump_values):
     if isinstance(val, int):
         bcode = bin(val)[2:].zfill(16) # converting the integer into a 16-bit binary string
-            
+    
+    elif isinstance(val, str):
+        val = symbol_table[val]
+        bcode = bin(val)[2:].zfill(16)
 
+    
     elif 'J' in val[1]:
         val[0] = comp_values[val[0]]
         val[1] = jump_values[val[1]]
+        
         bcode = bin(int("".join(map(str, val))))[2:].zfill(16) # joins the bits together
     
     else:
         val[0] = dest_values[val[0]]
         val[1] = comp_values[val[1]]
 
-        
-            
         bcode = bin(int("".join(map(str, val))))[2:].zfill(16) # joins the bits together
     
     return bcode
@@ -142,33 +166,24 @@ def coder(val, dest_values, comp_values, jump_values):
 
 
         
-file_in = input("Input file: ")
-file_out = input("Output file: ")
-pure_code = scanner(file_in)
-print(pure_code)
+file_in = input("Input file: ") # selecting the input file
+file_out = input("Output file: ") # selecting the output file
+pure_code = cleaner(file_in) # getting clean code without white space and comments
+no_symbols = scanner(pure_code, symbol_table) # scans for symbols and labels and writes them into a dictionary
+
 machine_list = []
-while len(pure_code) > len(machine_list):
+
+while len(pure_code) > len(machine_list): # parsing and coding every instruction one by one and appending it into a list
     
-    for instruction in pure_code:
+    for instruction in no_symbols:
         val = parser(instruction)
-        print(val)
         binary = coder(val, dest_values, comp_values, jump_values)
         machine_list.append(binary)
 
-print(machine_list)
-machine_instructions = "".join(map(str, machine_list))
-print(machine_instructions)
-with open("hack_programs/" + file_out, "w") as f:
+machine_instructions = "".join(map(str, machine_list)) # creating string out of the list
+
+print(machine_instructions) # just to check what it outputs
+
+with open("hack_programs/" + file_out, "w") as f: # writes into .hack file
   f.write(machine_instructions)
-
-
-    
-        
-
-
-
-
-def helper():
-    uwu = list("D=D+A//comment")
-    uwu = list("D=(celek a plus d)")
 
