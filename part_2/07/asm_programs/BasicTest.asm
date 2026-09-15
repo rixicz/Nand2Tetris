@@ -8,10 +8,22 @@ M=D
 @SP
 M=M+1
 
-
 // pop local 0
 
-
+@0
+D=A
+@LCL
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // push constant 21
 
@@ -23,7 +35,6 @@ M=D
 @SP
 M=M+1
 
-
 // push constant 22
 
 @22
@@ -34,14 +45,39 @@ M=D
 @SP
 M=M+1
 
-
 // pop argument 2
 
-
+@2
+D=A
+@ARG
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // pop argument 1
 
-
+@1
+D=A
+@ARG
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // push constant 36
 
@@ -53,10 +89,22 @@ M=D
 @SP
 M=M+1
 
-
 // pop this 6
 
-
+@6
+D=A
+@THIS
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // push constant 42
 
@@ -68,7 +116,6 @@ M=D
 @SP
 M=M+1
 
-
 // push constant 45
 
 @45
@@ -79,14 +126,39 @@ M=D
 @SP
 M=M+1
 
-
 // pop that 5
 
-
+@5
+D=A
+@THAT
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // pop that 2
 
-
+@2
+D=A
+@THAT
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // push constant 510
 
@@ -98,16 +170,14 @@ M=D
 @SP
 M=M+1
 
-
 // pop temp 6
-
 
 
 // push local 0
 
 @0
 D=A
-@LOC
+@LCL
 A=D+M
 D=M
 @SP
@@ -115,7 +185,6 @@ A=M
 M=D
 @SP
 M=M+1
-
 
 // push that 5
 
@@ -130,9 +199,7 @@ M=D
 @SP
 M=M+1
 
-
 // add
-
 
 
 // push argument 1
@@ -148,11 +215,9 @@ M=D
 @SP
 M=M+1
 
-
 // sub
 
 
-
 // push this 6
 
 @6
@@ -166,7 +231,6 @@ M=D
 @SP
 M=M+1
 
-
 // push this 6
 
 @6
@@ -179,21 +243,16 @@ A=M
 M=D
 @SP
 M=M+1
-
 
 // add
 
 
-
 // sub
-
 
 
 // push temp 6
 
 
-
 // add
-
 
 

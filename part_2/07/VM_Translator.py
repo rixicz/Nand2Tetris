@@ -15,20 +15,42 @@ def code_constant(command_list: list, asm_ins: list):
     asm_ins.append("@SP")
     asm_ins.append("A=M")
     asm_ins.append("M=D")
+    
     asm_ins.append("@SP")
     asm_ins.append("M=M+1")
 
-def code_arg_local_this_that(c_list: list, asm_ins, pointer: str):
+def push_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
     asm_ins.append(f"@{c_list[2]}")
     asm_ins.append("D=A")
     asm_ins.append(pointer)
     asm_ins.append("A=D+M")
     asm_ins.append("D=M")
+    
     asm_ins.append("@SP")
     asm_ins.append("A=M")
     asm_ins.append("M=D")
+    
     asm_ins.append("@SP")
     asm_ins.append("M=M+1")
+
+def pop_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
+    asm_ins.append(f"@{c_list[2]}")
+    asm_ins.append("D=A")
+    asm_ins.append(pointer)
+    asm_ins.append("A=D+M")
+    asm_ins.append("D=A")
+    
+    asm_ins.append("@addr")
+    asm_ins.append("M=D")
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M")
+    asm_ins.append("D=M")
+    
+    asm_ins.append("@addr")
+    asm_ins.append("A=M")
+    asm_ins.append("M=D")
 
 def coder(commands: list):
     asm_ins = []
@@ -36,35 +58,36 @@ def coder(commands: list):
         c = c.strip()
         c_list = c.split(" ")
         asm_ins.append("// " + c + "\n")
+        
         if c_list[0] == "push":
             if c_list[1] == "constant":
-                code_constant(c_list, asm_ins)            
+                code_constant(c_list, asm_ins)           
             
             elif c_list[1] == "argument":
-                code_arg_local_this_that(c_list, asm_ins, "@ARG")
+                push_arg_local_this_that(c_list, asm_ins, "@ARG")
 
             elif c_list[1] == "local":
-                code_arg_local_this_that(c_list, asm_ins, "@LOC")
+                push_arg_local_this_that(c_list, asm_ins, "@LCL")
 
             elif c_list[1] == "this":
-                code_arg_local_this_that(c_list, asm_ins, "@THIS")
+                push_arg_local_this_that(c_list, asm_ins, "@THIS")
 
             elif c_list[1] == "that":
-                code_arg_local_this_that(c_list, asm_ins, "@THAT")
+                push_arg_local_this_that(c_list, asm_ins, "@THAT")
         
         if c_list[0] == "pop":
             
             if c_list[1] == "argument":
-                pass
+                pop_arg_local_this_that(c_list, asm_ins, "@ARG")
 
             elif c_list[1] == "local":
-                pass
+                pop_arg_local_this_that(c_list, asm_ins, "@LCL")
 
             elif c_list[1] == "this":
-                pass
+                pop_arg_local_this_that(c_list, asm_ins, "@THIS")
 
             elif c_list[1] == "that":
-                pass
+                pop_arg_local_this_that(c_list, asm_ins, "@THAT")
         
         asm_ins.append("\n")
 
@@ -77,4 +100,7 @@ asm_instructions = coder(vm_commands)
 
 with open("asm_programs/" + filename + ".asm", "w") as file:
     for ins in asm_instructions:
-        file.write(ins + "\n")
+        if ins == "\n":
+            file.write(ins)
+        else:
+            file.write(ins + "\n")
