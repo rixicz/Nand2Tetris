@@ -9,14 +9,32 @@ def reader(filename: str):
         
         return commands
 
-def commenter(commands: list):
-    return ["// " + x for x in commands]
+def parser(commands: list):
+    asm_ins = []
+    for c in commands:
+        c = c.strip()
+        c_list = c.split(" ")
+        comment = "// " + c
+        if c_list[0] == "push":
+            if c_list[1] == "constant":
+                print(c_list)
+                asm_ins.append(comment + "\n")
+                asm_ins.append(f"@{c_list[2]}")
+                asm_ins.append("D=A")
+                asm_ins.append("@SP")
+                asm_ins.append("A=M")
+                asm_ins.append("M=D")
+                asm_ins.append("@SP")
+                asm_ins.append("M=M+1")
+                asm_ins.append("\n")
+
+    return asm_ins
 
 filename = input("Please specify the filename: ")
 
 vm_commands = reader(filename)
-asm_instructions = commenter(vm_commands)
+asm_instructions = parser(vm_commands)
 
 with open("asm_programs/" + filename + ".asm", "w") as file:
     for ins in asm_instructions:
-        file.write(ins)
+        file.write(ins + "\n")
