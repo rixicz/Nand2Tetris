@@ -91,7 +91,7 @@ def cleaner(filename): # takes all the instructions only and saves it into a lis
             if line.startswith("//"): # deals only with comments on a new line
                 continue
             
-            elif "/" in line: # eliminates inline comments
+            elif "//" in line: # eliminates inline comments
                 c_list = line.split("//", 1)
                 line = c_list.pop(0)
                 line = line.strip()
