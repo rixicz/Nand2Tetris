@@ -172,6 +172,20 @@ M=M+1
 
 // pop temp 6
 
+@6
+D=A
+@5
+A=D+A
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
 
 // push local 0
 
@@ -228,7 +242,7 @@ M=M-1
 A=M
 D=M
 A=A-1
-M=D-M
+M=M-D
 
 // push this 6
 
@@ -272,10 +286,19 @@ M=M-1
 A=M
 D=M
 A=A-1
-M=D-M
+M=M-D
 
 // push temp 6
 
+@6
+D=A
+@5
+A=D+A
+D=M
+@SP
+M=M+1
+A=M-1
+M=D
 
 // add
 

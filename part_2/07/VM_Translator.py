@@ -22,7 +22,7 @@ def code_constant(command_list: list, asm_ins: list):
 def push_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
     asm_ins.append(f"@{c_list[2]}")
     asm_ins.append("D=A")
-    asm_ins.append(pointer)
+    asm_ins.append(f"{pointer}")
     asm_ins.append("A=D+M")
     asm_ins.append("D=M")
     
@@ -36,7 +36,7 @@ def push_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
 def pop_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
     asm_ins.append(f"@{c_list[2]}")
     asm_ins.append("D=A")
-    asm_ins.append(pointer)
+    asm_ins.append(f"{pointer}")
     asm_ins.append("A=D+M")
     asm_ins.append("D=A")
     
@@ -72,26 +72,146 @@ def push_static(c_list: list, asm_ins: list, filename: str):
     asm_ins.append("@SP")
     asm_ins.append("M=M+1")
 
-def add(c_list: list, asm_ins: list):
+def push_temp(c_list: list, asm_ins: list):
+    asm_ins.append(f"@{c_list[2]}")
+    asm_ins.append("D=A")
+    asm_ins.append("@5")
+    asm_ins.append("A=D+A")
+    asm_ins.append("D=M")
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M+1")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=D")
+
+
+def pop_temp(c_list: list, asm_ins: list):
+    asm_ins.append(f"@{c_list[2]}")
+    asm_ins.append("D=A")
+    asm_ins.append("@5")
+    asm_ins.append("A=D+A")
+    asm_ins.append("D=A")
+
+    asm_ins.append("@addr")
+    asm_ins.append("M=D")
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M")
+    asm_ins.append("D=M")
+
+    asm_ins.append("@addr")
+    asm_ins.append("A=M")
+    asm_ins.append("M=D")
+
+def add(asm_ins: list):
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M")
+    asm_ins.append("D=M")
+    asm_ins.append("A=A-1")
+    asm_ins.append("M=D+M")
+
+
+def subtract(asm_ins: list):
     asm_ins.append("@SP")
     asm_ins.append("M=M-1")
     asm_ins.append("A=M")
     asm_ins.append("D=M")
 
     asm_ins.append("A=A-1")
-    asm_ins.append("M=D+M")    
+    asm_ins.append("M=M-D")  
 
-def subtract(c_list: list, asm_ins: list):
+def push_pointer(c_list: list, asm_ins: list):
+    if c_list[2] == "0":
+        pointer = "@THIS"
+    elif c_list[2] == "1":
+        pointer = "@THAT"
+
+    asm_ins.append(pointer)     
+    asm_ins.append("D=M")
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M+1")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=D")
+
+def pop_pointer(c_list: list, asm_ins: list):
+    if c_list[2] == "0":
+            pointer = "@THIS"
+    elif c_list[2] == "1":
+            pointer = "@THAT"
+
     asm_ins.append("@SP")
     asm_ins.append("M=M-1")
+
     asm_ins.append("A=M")
     asm_ins.append("D=M")
 
+    asm_ins.append(pointer)
+    asm_ins.append("M=D")
+
+def notfc(asm_ins: list):
+    asm_ins.append("@SP")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=!M")
+
+def andorfc(c_list: list, asm_ins: list):
+    if c_list[0].strip() == "and":
+        op = "&"
+
+    else:
+        op = "|"
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M")
+
+    asm_ins.append("D=M")
     asm_ins.append("A=A-1")
-    asm_ins.append("M=D-M")   
-    
+    asm_ins.append(f"M=D{op}M")
+
+def neg(asm_ins: list):
+    asm_ins.append("@SP")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=-M")
+
+def eqgtlt(c_list: list, asm_ins: list, i: int):
+    if c_list[0].strip() == "eq":
+        op = "JEQ"
+
+    elif c_list[0].strip() == "gt":
+        op = "JGT"
+
+    elif c_list[0].strip() == "lt":
+        op = "JLT"
+
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M")
+
+    asm_ins.append("D=M")
+    asm_ins.append("A=A-1")
+    asm_ins.append("D=M-D")
+
+    asm_ins.append(f"@TRUE{i}")
+    asm_ins.append(f"D;{op}")
+
+    asm_ins.append("@SP")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=0")
+    asm_ins.append(f"@FALSE{i}")
+    asm_ins.append("0;JEQ")
+
+    asm_ins.append(f"(TRUE{i})")
+    asm_ins.append("@SP")
+    asm_ins.append("A=M-1")
+    asm_ins.append("M=-1")
+    asm_ins.append(f"(FALSE{i})")
+
 def coder(commands: list, filename: str):
     asm_ins = []
+    i = 0
     for c in commands:
         c = c.strip()
         c_list = c.split(" ")
@@ -116,6 +236,12 @@ def coder(commands: list, filename: str):
             elif c_list[1] == "static":
                 push_static(c_list, asm_ins, filename)
 
+            elif c_list[1] == "temp":
+                push_temp(c_list, asm_ins)
+
+            elif c_list[1] == "pointer":
+                push_pointer(c_list, asm_ins)
+
         elif c_list[0] == "pop":
             
             if c_list[1] == "argument":
@@ -132,12 +258,31 @@ def coder(commands: list, filename: str):
         
             elif c_list[1] == "static":
                 pop_static(c_list, asm_ins, filename)
+
+            elif c_list[1] == "temp":
+                pop_temp(c_list, asm_ins)
+
+            elif c_list[1] == "pointer":
+                pop_pointer(c_list, asm_ins)
         
         elif c_list[0].strip() == "add": # added .strip() to eliminate the \n at the end
-            add(c_list, asm_ins)
+            add(asm_ins)
 
         elif c_list[0].strip() == "sub":
-            subtract(c_list, asm_ins)
+            subtract(asm_ins)
+
+        elif c_list[0].strip() == "not":
+            notfc(asm_ins)
+
+        elif c_list[0].strip() == "and" or c_list[0].strip() == "or":
+            andorfc(c_list, asm_ins)
+
+        elif c_list[0].strip() == "neg":
+            neg(asm_ins)
+
+        elif c_list[0].strip() == "eq" or c_list[0].strip() == "gt" or c_list[0].strip() == "lt":
+            i += 1
+            eqgtlt(c_list, asm_ins, i)
 
         asm_ins.append("\n")
 
