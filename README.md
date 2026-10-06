@@ -15,8 +15,8 @@ It is divided into two major parts containing 12 projects in total.
 | 04      | Hack Machine Language | CPU Emulator | Done :white_check_mark: |
 | 05      | Computer Architecture | Hardware Simulator | Done :white_check_mark: | 
 | 06      | Assembler             | Assembler | Done :white_check_mark: |
-| 07      | Virtual Machine       | VM Emulator | In Progress :clock12: |
-| 08      | Virtual Machine       | VM Emulator | Waiting... |
+| 07      | Virtual Machine       | VM Translator Beginner | Done :white_check_mark: |
+| 08      | Virtual Machine       | VM Translator Advanced | In Progress :clock12: |
 | 09      | Jack Language Specification | Jack Compiler | Waiting... |
 | 10      | Compiler I  | Jack Compiler | Waiting... |
 | 11      | Compiler II | Jack Compiler | Waiting... |
