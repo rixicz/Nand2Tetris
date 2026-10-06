@@ -209,6 +209,20 @@ def eqgtlt(c_list: list, asm_ins: list, i: int):
     asm_ins.append("M=-1")
     asm_ins.append(f"(FALSE{i})")
 
+def goto(c_list: list, asm_ins: list):
+    asm_ins.append(f"@{c_list[1]}")
+    asm_ins.append("0;JEQ")
+
+def ifgoto(c_list: list, asm_ins: list):
+    asm_ins.append("@SP")
+    asm_ins.append("M=M-1")
+    asm_ins.append("A=M+1")
+    asm_ins.append("D=M")
+
+    asm_ins.append(f"@{c_list[1]}")
+    asm_ins.append("D;JGT")
+
+
 def coder(commands: list, filename: str):
     asm_ins = []
     i = 0
@@ -284,6 +298,15 @@ def coder(commands: list, filename: str):
             i += 1
             eqgtlt(c_list, asm_ins, i)
 
+        elif c_list[0].strip() == "label":
+            asm_ins.append(f"({c_list[1]})")
+
+        elif c_list[0].strip() == "if-goto":
+            ifgoto(c_list, asm_ins)
+
+        elif c_list[0].strip() == "goto":
+            goto(c_list, asm_ins)
+
         asm_ins.append("\n")
 
     return asm_ins
@@ -291,10 +314,10 @@ def coder(commands: list, filename: str):
 filename = input("Please specify the filename: ")
 
 vm_commands = reader(filename)
-asm_instructions = coder(vm_commands, filename)
+final_instructions = coder(vm_commands, filename)
 
 with open("asm_programs/" + filename + ".asm", "w") as file:
-    for ins in asm_instructions:
+    for ins in final_instructions:
         if ins == "\n":
             file.write(ins)
         else:
