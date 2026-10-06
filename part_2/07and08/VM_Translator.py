@@ -216,7 +216,7 @@ def goto(c_list: list, asm_ins: list):
 def ifgoto(c_list: list, asm_ins: list):
     asm_ins.append("@SP")
     asm_ins.append("M=M-1")
-    asm_ins.append("A=M+1")
+    asm_ins.append("A=M")
     asm_ins.append("D=M")
 
     asm_ins.append(f"@{c_list[1]}")
