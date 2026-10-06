@@ -1,1 +1,0 @@
-1. Finish StackTest - maybe something with the incrementation in eqgtlt?
