@@ -1,3 +1,6 @@
+import comm
+
+
 def reader(filename: str):
     with open("vm_programs/" + filename + ".vm", "r") as file:
         commands = []
@@ -125,7 +128,7 @@ def subtract(asm_ins: list):
 def push_pointer(c_list: list, asm_ins: list):
     if c_list[2] == "0":
         pointer = "@THIS"
-    elif c_list[2] == "1":
+    else:
         pointer = "@THAT"
 
     asm_ins.append(pointer)     
@@ -139,7 +142,7 @@ def push_pointer(c_list: list, asm_ins: list):
 def pop_pointer(c_list: list, asm_ins: list):
     if c_list[2] == "0":
             pointer = "@THIS"
-    elif c_list[2] == "1":
+    else:
             pointer = "@THAT"
 
     asm_ins.append("@SP")
@@ -186,6 +189,9 @@ def eqgtlt(c_list: list, asm_ins: list, i: int):
     elif c_list[0].strip() == "lt":
         op = "JLT"
 
+    else:
+        op = "not defined"
+
     asm_ins.append("@SP")
     asm_ins.append("M=M-1")
     asm_ins.append("A=M")
@@ -222,7 +228,44 @@ def ifgoto(c_list: list, asm_ins: list):
     asm_ins.append(f"@{c_list[1]}")
     asm_ins.append("D;JGT")
 
+def save_pointer_state(asm_ins: list, pointer: str):
+    asm_ins.append(pointer)
+    asm_ins.append("D=M")
+    
+    asm_ins.append("@SP")
+    asm_ins.append("M=M+1")
+    asm_ins.append("A=M-1")
 
+    asm_ins.append("M=D")
+
+def call(c_list: list, asm_ins: list):
+    # somehow need to save the return address
+    save_pointer_state(asm_ins, "@LCL")
+    save_pointer_state(asm_ins, "@ARG")
+    save_pointer_state(asm_ins, "@THIS")
+    save_pointer_state(asm_ins, "@THAT")
+
+    asm_ins.append("@SP")
+    asm_ins.append("D=M")
+    asm_ins.append("@5")
+    asm_ins.append("D=D-A")
+    asm_ins.append(f"@{c_list[2]}")
+    asm_ins.append("D=D-A") # repositions the ARG pointer
+
+    asm_ins.append("@SP")
+    asm_ins.append("D=M")
+    asm_ins.append("@LCL")
+    asm_ins.append("M=D") # repositions the LCL pointer
+
+def search_for_functions(commands: list):
+    functions = {}
+    for cmd in commands:
+        cmd = cmd.split(" ")
+        if cmd[0] == "function":
+            functions[cmd[1]] = []
+
+    return functions
+    
 def coder(commands: list, filename: str):
     asm_ins = []
     i = 0
@@ -230,7 +273,7 @@ def coder(commands: list, filename: str):
         c = c.strip()
         c_list = c.split(" ")
         asm_ins.append("// " + c + "\n")
-        
+
         if c_list[0] == "push":
             if c_list[1] == "constant":
                 code_constant(c_list, asm_ins)           
@@ -306,6 +349,9 @@ def coder(commands: list, filename: str):
 
         elif c_list[0].strip() == "goto":
             goto(c_list, asm_ins)
+
+        elif c_list[0].strip() == "call":
+            call(c_list, asm_ins)
 
         asm_ins.append("\n")
 
