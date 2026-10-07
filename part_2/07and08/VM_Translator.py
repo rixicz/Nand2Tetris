@@ -267,7 +267,7 @@ def search_for_functions(commands: list):
     return functions
     
 def coder(commands: list, filename: str):
-    asm_ins = []
+    asm_ins = search_for_functions(commands)
     i = 0
     for c in commands:
         c = c.strip()
