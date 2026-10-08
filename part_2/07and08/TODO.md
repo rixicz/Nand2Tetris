@@ -1,1 +1,1 @@
-1. Finish StackTest - maybe something with the incrementation in eqgtlt?
+1. Fix declaring a function after there is a reference to it in another function - how to translate in a correct order?
