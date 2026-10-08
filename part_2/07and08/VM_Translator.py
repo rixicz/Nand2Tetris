@@ -359,7 +359,7 @@ def coder(commands: list, filename: str):
 
         current_func.append("\n")
 
-    reverted_functions = [val for _, val in functions.items()]
+    reverted_functions = reversed([val for _, val in functions.items()])
     for f in reverted_functions:
         for ins in f:
             asm_ins.append(ins)    
