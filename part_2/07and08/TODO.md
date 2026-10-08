@@ -1,1 +1,2 @@
 1. Fix declaring a function after there is a reference to it in another function - how to translate in a correct order?
+2. Maybe go from bottom to top? - revert the functions dictionary
