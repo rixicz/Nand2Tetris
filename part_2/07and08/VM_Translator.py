@@ -359,10 +359,11 @@ def coder(commands: list, filename: str):
 
         current_func.append("\n")
 
-    for function_instructions in functions.values():
-        current_func.extend(function_instructions)
+    reverted_functions = [val for _, val in functions.items()]
+    for f in functions:
+        asm_ins.append(f)    
 
-    return current_func
+    return asm_ins
 
 filename = input("Please specify the filename: ")
 
