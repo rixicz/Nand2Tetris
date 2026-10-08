@@ -1,5 +1,3 @@
-import comm
-
 
 def reader(filename: str):
     with open("vm_programs/" + filename + ".vm", "r") as file:
@@ -12,174 +10,174 @@ def reader(filename: str):
         
         return commands
 
-def code_constant(command_list: list, asm_ins: list):
-    asm_ins.append(f"@{command_list[2]}")
-    asm_ins.append("D=A")
-    asm_ins.append("@SP")
-    asm_ins.append("A=M")
-    asm_ins.append("M=D")
+def code_constant(command_list: list, current_func: list):
+    current_func.append(f"@{command_list[2]}")
+    current_func.append("D=A")
+    current_func.append("@SP")
+    current_func.append("A=M")
+    current_func.append("M=D")
     
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
 
-def push_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
-    asm_ins.append(f"@{c_list[2]}")
-    asm_ins.append("D=A")
-    asm_ins.append(f"{pointer}")
-    asm_ins.append("A=D+M")
-    asm_ins.append("D=M")
+def push_arg_local_this_that(c_list: list, current_func: list, pointer: str):
+    current_func.append(f"@{c_list[2]}")
+    current_func.append("D=A")
+    current_func.append(f"{pointer}")
+    current_func.append("A=D+M")
+    current_func.append("D=M")
     
-    asm_ins.append("@SP")
-    asm_ins.append("A=M")
-    asm_ins.append("M=D")
+    current_func.append("@SP")
+    current_func.append("A=M")
+    current_func.append("M=D")
     
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
 
-def pop_arg_local_this_that(c_list: list, asm_ins: list, pointer: str):
-    asm_ins.append(f"@{c_list[2]}")
-    asm_ins.append("D=A")
-    asm_ins.append(f"{pointer}")
-    asm_ins.append("A=D+M")
-    asm_ins.append("D=A")
+def pop_arg_local_this_that(c_list: list, current_func: list, pointer: str):
+    current_func.append(f"@{c_list[2]}")
+    current_func.append("D=A")
+    current_func.append(f"{pointer}")
+    current_func.append("A=D+M")
+    current_func.append("D=A")
     
-    asm_ins.append("@addr")
-    asm_ins.append("M=D")
+    current_func.append("@addr")
+    current_func.append("M=D")
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
     
-    asm_ins.append("@addr")
-    asm_ins.append("A=M")
-    asm_ins.append("M=D")
+    current_func.append("@addr")
+    current_func.append("A=M")
+    current_func.append("M=D")
 
-def pop_static(c_list: list, asm_ins: list, filename: str):
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
+def pop_static(c_list: list, current_func: list, filename: str):
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
 
-    asm_ins.append(f"@{filename}.{c_list[2]}")
-    asm_ins.append("M=D")
+    current_func.append(f"@{filename}.{c_list[2]}")
+    current_func.append("M=D")
 
-def push_static(c_list: list, asm_ins: list, filename: str):
-    asm_ins.append(f"@{filename}.{c_list[2]}")
-    asm_ins.append("D=M")
+def push_static(c_list: list, current_func: list, filename: str):
+    current_func.append(f"@{filename}.{c_list[2]}")
+    current_func.append("D=M")
 
-    asm_ins.append("@SP")
-    asm_ins.append("A=M")
-    asm_ins.append("M=D")
+    current_func.append("@SP")
+    current_func.append("A=M")
+    current_func.append("M=D")
     
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
 
-def push_temp(c_list: list, asm_ins: list):
-    asm_ins.append(f"@{c_list[2]}")
-    asm_ins.append("D=A")
-    asm_ins.append("@5")
-    asm_ins.append("A=D+A")
-    asm_ins.append("D=M")
+def push_temp(c_list: list, current_func: list):
+    current_func.append(f"@{c_list[2]}")
+    current_func.append("D=A")
+    current_func.append("@5")
+    current_func.append("A=D+A")
+    current_func.append("D=M")
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=D")
-
-
-def pop_temp(c_list: list, asm_ins: list):
-    asm_ins.append(f"@{c_list[2]}")
-    asm_ins.append("D=A")
-    asm_ins.append("@5")
-    asm_ins.append("A=D+A")
-    asm_ins.append("D=A")
-
-    asm_ins.append("@addr")
-    asm_ins.append("M=D")
-
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
-
-    asm_ins.append("@addr")
-    asm_ins.append("A=M")
-    asm_ins.append("M=D")
-
-def add(asm_ins: list):
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
-    asm_ins.append("A=A-1")
-    asm_ins.append("M=D+M")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
+    current_func.append("A=M-1")
+    current_func.append("M=D")
 
 
-def subtract(asm_ins: list):
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
+def pop_temp(c_list: list, current_func: list):
+    current_func.append(f"@{c_list[2]}")
+    current_func.append("D=A")
+    current_func.append("@5")
+    current_func.append("A=D+A")
+    current_func.append("D=A")
 
-    asm_ins.append("A=A-1")
-    asm_ins.append("M=M-D")  
+    current_func.append("@addr")
+    current_func.append("M=D")
 
-def push_pointer(c_list: list, asm_ins: list):
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
+
+    current_func.append("@addr")
+    current_func.append("A=M")
+    current_func.append("M=D")
+
+def add(current_func: list):
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
+    current_func.append("A=A-1")
+    current_func.append("M=D+M")
+
+
+def subtract(current_func: list):
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
+
+    current_func.append("A=A-1")
+    current_func.append("M=M-D")  
+
+def push_pointer(c_list: list, current_func: list):
     if c_list[2] == "0":
         pointer = "@THIS"
     else:
         pointer = "@THAT"
 
-    asm_ins.append(pointer)     
-    asm_ins.append("D=M")
+    current_func.append(pointer)     
+    current_func.append("D=M")
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=D")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
+    current_func.append("A=M-1")
+    current_func.append("M=D")
 
-def pop_pointer(c_list: list, asm_ins: list):
+def pop_pointer(c_list: list, current_func: list):
     if c_list[2] == "0":
             pointer = "@THIS"
     else:
             pointer = "@THAT"
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
+    current_func.append("@SP")
+    current_func.append("M=M-1")
 
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
+    current_func.append("A=M")
+    current_func.append("D=M")
 
-    asm_ins.append(pointer)
-    asm_ins.append("M=D")
+    current_func.append(pointer)
+    current_func.append("M=D")
 
-def notfc(asm_ins: list):
-    asm_ins.append("@SP")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=!M")
+def notfc(current_func: list):
+    current_func.append("@SP")
+    current_func.append("A=M-1")
+    current_func.append("M=!M")
 
-def andorfc(c_list: list, asm_ins: list):
+def andorfc(c_list: list, current_func: list):
     if c_list[0].strip() == "and":
         op = "&"
 
     else:
         op = "|"
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
 
-    asm_ins.append("D=M")
-    asm_ins.append("A=A-1")
-    asm_ins.append(f"M=D{op}M")
+    current_func.append("D=M")
+    current_func.append("A=A-1")
+    current_func.append(f"M=D{op}M")
 
-def neg(asm_ins: list):
-    asm_ins.append("@SP")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=-M")
+def neg(current_func: list):
+    current_func.append("@SP")
+    current_func.append("A=M-1")
+    current_func.append("M=-M")
 
-def eqgtlt(c_list: list, asm_ins: list, i: int):
+def eqgtlt(c_list: list, current_func: list, i: int):
     if c_list[0].strip() == "eq":
         op = "JEQ"
 
@@ -192,70 +190,70 @@ def eqgtlt(c_list: list, asm_ins: list, i: int):
     else:
         op = "not defined"
 
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
 
-    asm_ins.append("D=M")
-    asm_ins.append("A=A-1")
-    asm_ins.append("D=M-D")
+    current_func.append("D=M")
+    current_func.append("A=A-1")
+    current_func.append("D=M-D")
 
-    asm_ins.append(f"@TRUE{i}")
-    asm_ins.append(f"D;{op}")
+    current_func.append(f"@TRUE{i}")
+    current_func.append(f"D;{op}")
 
-    asm_ins.append("@SP")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=0")
-    asm_ins.append(f"@FALSE{i}")
-    asm_ins.append("0;JEQ")
+    current_func.append("@SP")
+    current_func.append("A=M-1")
+    current_func.append("M=0")
+    current_func.append(f"@FALSE{i}")
+    current_func.append("0;JEQ")
 
-    asm_ins.append(f"(TRUE{i})")
-    asm_ins.append("@SP")
-    asm_ins.append("A=M-1")
-    asm_ins.append("M=-1")
-    asm_ins.append(f"(FALSE{i})")
+    current_func.append(f"(TRUE{i})")
+    current_func.append("@SP")
+    current_func.append("A=M-1")
+    current_func.append("M=-1")
+    current_func.append(f"(FALSE{i})")
 
-def goto(c_list: list, asm_ins: list):
-    asm_ins.append(f"@{c_list[1]}")
-    asm_ins.append("0;JEQ")
+def goto(c_list: list, current_func: list):
+    current_func.append(f"@{c_list[1]}")
+    current_func.append("0;JEQ")
 
-def ifgoto(c_list: list, asm_ins: list):
-    asm_ins.append("@SP")
-    asm_ins.append("M=M-1")
-    asm_ins.append("A=M")
-    asm_ins.append("D=M")
+def ifgoto(c_list: list, current_func: list):
+    current_func.append("@SP")
+    current_func.append("M=M-1")
+    current_func.append("A=M")
+    current_func.append("D=M")
 
-    asm_ins.append(f"@{c_list[1]}")
-    asm_ins.append("D;JGT")
+    current_func.append(f"@{c_list[1]}")
+    current_func.append("D;JGT")
 
-def save_pointer_state(asm_ins: list, pointer: str):
-    asm_ins.append(pointer)
-    asm_ins.append("D=M")
+def save_pointer_state(current_func: list, pointer: str):
+    current_func.append(pointer)
+    current_func.append("D=M")
     
-    asm_ins.append("@SP")
-    asm_ins.append("M=M+1")
-    asm_ins.append("A=M-1")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
+    current_func.append("A=M-1")
 
-    asm_ins.append("M=D")
+    current_func.append("M=D")
 
-def call(c_list: list, asm_ins: list):
+def call(c_list: list, current_func: list):
     # somehow need to save the return address
-    save_pointer_state(asm_ins, "@LCL")
-    save_pointer_state(asm_ins, "@ARG")
-    save_pointer_state(asm_ins, "@THIS")
-    save_pointer_state(asm_ins, "@THAT")
+    save_pointer_state(current_func, "@LCL")
+    save_pointer_state(current_func, "@ARG")
+    save_pointer_state(current_func, "@THIS")
+    save_pointer_state(current_func, "@THAT")
 
-    asm_ins.append("@SP")
-    asm_ins.append("D=M")
-    asm_ins.append("@5")
-    asm_ins.append("D=D-A")
-    asm_ins.append(f"@{c_list[2]}")
-    asm_ins.append("D=D-A") # repositions the ARG pointer
+    current_func.append("@SP")
+    current_func.append("D=M")
+    current_func.append("@5")
+    current_func.append("D=D-A")
+    current_func.append(f"@{c_list[2]}")
+    current_func.append("D=D-A") # repositions the ARG pointer
 
-    asm_ins.append("@SP")
-    asm_ins.append("D=M")
-    asm_ins.append("@LCL")
-    asm_ins.append("M=D") # repositions the LCL pointer
+    current_func.append("@SP")
+    current_func.append("D=M")
+    current_func.append("@LCL")
+    current_func.append("M=D") # repositions the LCL pointer
 
 def search_for_functions(commands: list):
     functions = {}
@@ -267,7 +265,9 @@ def search_for_functions(commands: list):
     return functions
     
 def coder(commands: list, filename: str):
-    asm_ins = search_for_functions(commands)
+    asm_ins = []
+    current_func = []
+    functions = search_for_functions(commands)
     i = 0
     for c in commands:
         c = c.strip()
@@ -276,86 +276,93 @@ def coder(commands: list, filename: str):
 
         if c_list[0] == "push":
             if c_list[1] == "constant":
-                code_constant(c_list, asm_ins)           
+                code_constant(c_list, current_func)           
             
             elif c_list[1] == "argument":
-                push_arg_local_this_that(c_list, asm_ins, "@ARG")
+                push_arg_local_this_that(c_list, current_func, "@ARG")
 
             elif c_list[1] == "local":
-                push_arg_local_this_that(c_list, asm_ins, "@LCL")
+                push_arg_local_this_that(c_list, current_func, "@LCL")
 
             elif c_list[1] == "this":
-                push_arg_local_this_that(c_list, asm_ins, "@THIS")
+                push_arg_local_this_that(c_list, current_func, "@THIS")
 
             elif c_list[1] == "that":
-                push_arg_local_this_that(c_list, asm_ins, "@THAT")
+                push_arg_local_this_that(c_list, current_func, "@THAT")
 
             elif c_list[1] == "static":
-                push_static(c_list, asm_ins, filename)
+                push_static(c_list, current_func, filename)
 
             elif c_list[1] == "temp":
-                push_temp(c_list, asm_ins)
+                push_temp(c_list, current_func)
 
             elif c_list[1] == "pointer":
-                push_pointer(c_list, asm_ins)
+                push_pointer(c_list, current_func)
 
         elif c_list[0] == "pop":
             
             if c_list[1] == "argument":
-                pop_arg_local_this_that(c_list, asm_ins, "@ARG")
+                pop_arg_local_this_that(c_list, current_func, "@ARG")
 
             elif c_list[1] == "local":
-                pop_arg_local_this_that(c_list, asm_ins, "@LCL")
+                pop_arg_local_this_that(c_list, current_func, "@LCL")
 
             elif c_list[1] == "this":
-                pop_arg_local_this_that(c_list, asm_ins, "@THIS")
+                pop_arg_local_this_that(c_list, current_func, "@THIS")
 
             elif c_list[1] == "that":
-                pop_arg_local_this_that(c_list, asm_ins, "@THAT")
+                pop_arg_local_this_that(c_list, current_func, "@THAT")
         
             elif c_list[1] == "static":
-                pop_static(c_list, asm_ins, filename)
+                pop_static(c_list, current_func, filename)
 
             elif c_list[1] == "temp":
-                pop_temp(c_list, asm_ins)
+                pop_temp(c_list, current_func)
 
             elif c_list[1] == "pointer":
-                pop_pointer(c_list, asm_ins)
+                pop_pointer(c_list, current_func)
         
         elif c_list[0].strip() == "add": # added .strip() to eliminate the \n at the end
-            add(asm_ins)
+            add(current_func)
 
         elif c_list[0].strip() == "sub":
-            subtract(asm_ins)
+            subtract(current_func)
 
         elif c_list[0].strip() == "not":
-            notfc(asm_ins)
+            notfc(current_func)
 
         elif c_list[0].strip() == "and" or c_list[0].strip() == "or":
-            andorfc(c_list, asm_ins)
+            andorfc(c_list, current_func)
 
         elif c_list[0].strip() == "neg":
-            neg(asm_ins)
+            neg(current_func)
 
         elif c_list[0].strip() == "eq" or c_list[0].strip() == "gt" or c_list[0].strip() == "lt":
             i += 1
-            eqgtlt(c_list, asm_ins, i)
+            eqgtlt(c_list, current_func, i)
 
         elif c_list[0].strip() == "label":
-            asm_ins.append(f"({c_list[1]})")
+            current_func.append(f"({c_list[1]})")
 
         elif c_list[0].strip() == "if-goto":
-            ifgoto(c_list, asm_ins)
+            ifgoto(c_list, current_func)
 
         elif c_list[0].strip() == "goto":
-            goto(c_list, asm_ins)
+            goto(c_list, current_func)
 
         elif c_list[0].strip() == "call":
-            call(c_list, asm_ins)
+            call(c_list, current_func)
 
-        asm_ins.append("\n")
+        elif c_list[0].strip() == "function":
+            current_func = functions[c_list[1]]
+            current_func.append(f"({c_list[1]})")
 
-    return asm_ins
+        current_func.append("\n")
+
+    for function_instructions in functions.values():
+        current_func.extend(function_instructions)
+
+    return current_func
 
 filename = input("Please specify the filename: ")
 
