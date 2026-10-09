@@ -213,6 +213,9 @@ def eqgtlt(c_list: list, current_func: list, i: int):
     current_func.append("M=-1")
     current_func.append(f"(FALSE{i})")
 
+def label(label_name: str, current_func: list):
+    current_func.append(f"({label_name})")
+
 def goto(c_list: list, current_func: list):
     current_func.append(f"@{c_list[1]}")
     current_func.append("0;JEQ")
@@ -236,7 +239,11 @@ def save_pointer_state(current_func: list, pointer: str):
 
     current_func.append("M=D")
 
-def call(c_list: list, current_func: list):
+def call(c_list: list, current_func: list, returnval: int):
+    current_func.append(f"@returnval{returnval}")
+    current_func.append("D=M")
+    current_func.append("@retAddr")
+    current_func.append("M=D")
     # somehow need to save the return address
     save_pointer_state(current_func, "@LCL")
     save_pointer_state(current_func, "@ARG")
@@ -255,6 +262,10 @@ def call(c_list: list, current_func: list):
     current_func.append("@LCL")
     current_func.append("M=D") # repositions the LCL pointer
 
+    goto(c_list, current_func) # goes to the function
+    label(f"returnval{returnval}", current_func)
+    
+
 def search_for_functions(commands: list):
     functions = {}
     for cmd in commands:
@@ -269,10 +280,11 @@ def coder(commands: list, filename: str):
     current_func = []
     functions = search_for_functions(commands)
     i = 0
+    returnval = 0
     for c in commands:
         c = c.strip()
         c_list = c.split(" ")
-        asm_ins.append("// " + c + "\n")
+        current_func.append("// " + c + "\n")
 
         if c_list[0] == "push":
             if c_list[1] == "constant":
@@ -342,7 +354,7 @@ def coder(commands: list, filename: str):
             eqgtlt(c_list, current_func, i)
 
         elif c_list[0].strip() == "label":
-            current_func.append(f"({c_list[1]})")
+            label(c_list[1], current_func)
 
         elif c_list[0].strip() == "if-goto":
             ifgoto(c_list, current_func)
@@ -351,7 +363,8 @@ def coder(commands: list, filename: str):
             goto(c_list, current_func)
 
         elif c_list[0].strip() == "call":
-            call(c_list, current_func)
+            call(c_list, current_func, returnval)
+            returnval += 1
 
         elif c_list[0].strip() == "function":
             current_func = functions[c_list[1]]
