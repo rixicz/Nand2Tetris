@@ -267,7 +267,7 @@ def call(c_list: list, current_func: list, returnval: int):
 
 def function_label(c_list: list, current_func: list):
     current_func.append(f"({c_list[1]})")
-    for i in range(0, c_list[2]):
+    for i in range(0, int(c_list[2])):
         current_func.append("@SP")
         current_func.append("M=M+1")
         current_func.append("A=M-1")
