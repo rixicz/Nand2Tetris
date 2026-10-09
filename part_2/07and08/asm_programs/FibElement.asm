@@ -18,6 +18,10 @@ M=M+1
 
 // call Main.fibonacci 1
 
+@returnval2
+D=M
+@retAddr
+M=D
 @LCL
 D=M
 @SP
@@ -54,6 +58,7 @@ D=M
 M=D
 @Main.fibonacci
 0;JEQ
+(returnval2)
 
 // label END
 
@@ -182,6 +187,10 @@ M=M-D
 
 // call Main.fibonacci 1  // computes fib(n - 2)
 
+@returnval0
+D=M
+@retAddr
+M=D
 @LCL
 D=M
 @SP
@@ -218,6 +227,7 @@ D=M
 M=D
 @Main.fibonacci
 0;JEQ
+(returnval0)
 
 // push argument 0
 
@@ -253,6 +263,10 @@ M=M-D
 
 // call Main.fibonacci 1  // computes fib(n - 1)
 
+@returnval1
+D=M
+@retAddr
+M=D
 @LCL
 D=M
 @SP
@@ -289,6 +303,7 @@ D=M
 M=D
 @Main.fibonacci
 0;JEQ
+(returnval1)
 
 // add                    // returns fib(n - 1) + fib(n - 2)
 

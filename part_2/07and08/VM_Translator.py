@@ -264,6 +264,14 @@ def call(c_list: list, current_func: list, returnval: int):
 
     goto(c_list, current_func) # goes to the function
     label(f"returnval{returnval}", current_func)
+
+def function_label(c_list: list, current_func: list):
+    current_func.append(f"({c_list[1]})")
+    for i in range(0, c_list[2]):
+        current_func.append("@SP")
+        current_func.append("M=M+1")
+        current_func.append("A=M-1")
+        current_func.append("M=0")
     
 
 def search_for_functions(commands: list):
@@ -368,7 +376,7 @@ def coder(commands: list, filename: str):
 
         elif c_list[0].strip() == "function":
             current_func = functions[c_list[1]]
-            current_func.append(f"({c_list[1]})")
+            function_label(c_list, current_func)
 
         current_func.append("\n")
 
