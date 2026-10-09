@@ -34,8 +34,8 @@ def push_arg_local_this_that(c_list: list, current_func: list, pointer: str):
     current_func.append("@SP")
     current_func.append("M=M+1")
 
-def pop_arg_local_this_that(c_list: list, current_func: list, pointer: str):
-    current_func.append(f"@{c_list[2]}")
+def pop_arg_local_this_that(slot: int, current_func: list, pointer: str):
+    current_func.append(f"@{slot}")
     current_func.append("D=A")
     current_func.append(f"{pointer}")
     current_func.append("A=D+M")
@@ -216,8 +216,8 @@ def eqgtlt(c_list: list, current_func: list, i: int):
 def label(label_name: str, current_func: list):
     current_func.append(f"({label_name})")
 
-def goto(c_list: list, current_func: list):
-    current_func.append(f"@{c_list[1]}")
+def goto(address: str, current_func: list):
+    current_func.append(f"@{address}")
     current_func.append("0;JEQ")
 
 def ifgoto(c_list: list, current_func: list):
@@ -242,8 +242,11 @@ def save_pointer_state(current_func: list, pointer: str):
 def call(c_list: list, current_func: list, returnval: int):
     current_func.append(f"@returnval{returnval}")
     current_func.append("D=M")
-    current_func.append("@retAddr")
-    current_func.append("M=D")
+    current_func.append("@SP")
+    current_func.append("M=M+1")
+    current_func.append("A=M-1")
+    current_func.append("M=D")  # pushes the return address onto the stack, so I can access it later
+    
     # somehow need to save the return address
     save_pointer_state(current_func, "@LCL")
     save_pointer_state(current_func, "@ARG")
@@ -262,17 +265,42 @@ def call(c_list: list, current_func: list, returnval: int):
     current_func.append("@LCL")
     current_func.append("M=D") # repositions the LCL pointer
 
-    goto(c_list, current_func) # goes to the function
+    goto(c_list[1], current_func) # goes to the function
     label(f"returnval{returnval}", current_func)
 
 def function_label(c_list: list, current_func: list):
     current_func.append(f"({c_list[1]})")
-    for i in range(0, int(c_list[2])):
+    for i in range(0, int(c_list[2]) + 1):
         current_func.append("@SP")
         current_func.append("M=M+1")
         current_func.append("A=M-1")
         current_func.append("M=0")
-    
+
+def return_func(current_func: list):
+    current_func.append("@LCL")
+    current_func.append("D=M")
+    current_func.append("@endFrame")
+    current_func.append("M=D") # declares the endFrame
+
+    pop_arg_local_this_that(0, current_func, "@ARG") # pop arg 0
+
+    current_func.append("@ARG")
+    current_func.append("D=M")
+    current_func.append("@SP")
+    current_func.append("M=D+1") # places the SP just after ARG
+
+    pointers = ["THAT", "THIS", "ARG", "LCL", "retAddr"]
+    for i in range(1, 6):
+        current_func.append(f"@{i}")
+        current_func.append("D=M")
+        current_func.append("@endFrame")
+        current_func.append("D=M-D")          # endFrame - i
+        current_func.append("A=D")
+        current_func.append("D=M")
+        current_func.append(f"@{pointers[i-1]}")    # retAddr = *(endframe - 5), THIS = *(endframe - 2) etc.
+        current_func.append("M=D")
+
+    current_func.append("0;JEQ") # using goto generates unwanted duplication of @returnAddress
 
 def search_for_functions(commands: list):
     functions = {}
@@ -322,16 +350,16 @@ def coder(commands: list, filename: str):
         elif c_list[0] == "pop":
             
             if c_list[1] == "argument":
-                pop_arg_local_this_that(c_list, current_func, "@ARG")
+                pop_arg_local_this_that(int(c_list[2]), current_func, "@ARG")
 
             elif c_list[1] == "local":
-                pop_arg_local_this_that(c_list, current_func, "@LCL")
+                pop_arg_local_this_that(int(c_list[2]), current_func, "@LCL")
 
             elif c_list[1] == "this":
-                pop_arg_local_this_that(c_list, current_func, "@THIS")
+                pop_arg_local_this_that(int(c_list[2]), current_func, "@THIS")
 
             elif c_list[1] == "that":
-                pop_arg_local_this_that(c_list, current_func, "@THAT")
+                pop_arg_local_this_that(int(c_list[2]), current_func, "@THAT")
         
             elif c_list[1] == "static":
                 pop_static(c_list, current_func, filename)
@@ -368,7 +396,7 @@ def coder(commands: list, filename: str):
             ifgoto(c_list, current_func)
 
         elif c_list[0].strip() == "goto":
-            goto(c_list, current_func)
+            goto(c_list[1], current_func)
 
         elif c_list[0].strip() == "call":
             call(c_list, current_func, returnval)
@@ -377,6 +405,9 @@ def coder(commands: list, filename: str):
         elif c_list[0].strip() == "function":
             current_func = functions[c_list[1]]
             function_label(c_list, current_func)
+
+        elif c_list[0].strip() == "return":
+            return_func(current_func)
 
         current_func.append("\n")
 

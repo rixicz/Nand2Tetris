@@ -1,4 +1,8 @@
 (Sys.init)
+@SP
+M=M+1
+A=M-1
+M=0
 
 // // Computes fibonacci(4)
 
@@ -20,7 +24,9 @@ M=M+1
 
 @returnval2
 D=M
-@retAddr
+@SP
+M=M+1
+A=M-1
 M=D
 @LCL
 D=M
@@ -70,6 +76,10 @@ M=D
 0;JEQ
 
 (Main.fibonacci)
+@SP
+M=M+1
+A=M-1
+M=0
 
 // push argument 0
 
@@ -148,6 +158,69 @@ M=M+1
 
 // return
 
+@LCL
+D=M
+@endFrame
+M=D
+@0
+D=A
+@ARG
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
+@ARG
+D=M
+@SP
+M=D+1
+@1
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@THAT
+M=D
+@2
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@THIS
+M=D
+@3
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@ARG
+M=D
+@4
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@LCL
+M=D
+@5
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
+0;JEQ
 
 // label N_GE_2               // if n >= 2 returns fib(n - 2) + fib(n - 1)
 
@@ -189,7 +262,9 @@ M=M-D
 
 @returnval0
 D=M
-@retAddr
+@SP
+M=M+1
+A=M-1
 M=D
 @LCL
 D=M
@@ -265,7 +340,9 @@ M=M-D
 
 @returnval1
 D=M
-@retAddr
+@SP
+M=M+1
+A=M-1
 M=D
 @LCL
 D=M
@@ -316,6 +393,69 @@ M=D+M
 
 // return
 
+@LCL
+D=M
+@endFrame
+M=D
+@0
+D=A
+@ARG
+A=D+M
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
+@ARG
+D=M
+@SP
+M=D+1
+@1
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@THAT
+M=D
+@2
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@THIS
+M=D
+@3
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@ARG
+M=D
+@4
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@LCL
+M=D
+@5
+D=M
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
+0;JEQ
 
 // function Sys.init 0
 
