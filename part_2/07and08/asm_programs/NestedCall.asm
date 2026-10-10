@@ -10,6 +10,122 @@ M=D
 D=A
 @ARG
 M=D
+(Sys.init)
+
+// push constant 4000	// tests that THIS and THAT are handled correctly
+
+@4000	//
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+// pop pointer 0
+
+@SP
+M=M-1
+A=M
+D=M
+@THIS
+M=D
+
+// push constant 5000
+
+@5000
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+
+// pop pointer 1
+
+@SP
+M=M-1
+A=M
+D=M
+@THAT
+M=D
+
+// call Sys.main 0
+
+@returnval0
+D=A
+@SP
+M=M+1
+A=M-1
+M=D
+@LCL
+D=M
+@SP
+M=M+1
+A=M-1
+M=D
+@ARG
+D=M
+@SP
+M=M+1
+A=M-1
+M=D
+@THIS
+D=M
+@SP
+M=M+1
+A=M-1
+M=D
+@THAT
+D=M
+@SP
+M=M+1
+A=M-1
+M=D
+@SP
+D=M
+@5
+D=D-A
+@0
+D=D-A
+@ARG
+M=D
+@SP
+D=M
+@LCL
+M=D
+@Sys.main
+0;JEQ
+(returnval0)
+
+// pop temp 1
+
+@1
+D=A
+@5
+A=D+A
+D=A
+@addr
+M=D
+@SP
+M=M-1
+A=M
+D=M
+@addr
+A=M
+M=D
+
+// label LOOP
+
+(LOOP)
+
+// goto LOOP
+
+@LOOP
+0;JEQ
+
+// function Sys.main 5
+
 (Sys.add12)
 
 // push constant 4002
@@ -534,120 +650,4 @@ A=M
 0;JEQ
 
 // function Sys.add12 0
-
-(Sys.init)
-
-// push constant 4000	// tests that THIS and THAT are handled correctly
-
-@4000	//
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-
-// pop pointer 0
-
-@SP
-M=M-1
-A=M
-D=M
-@THIS
-M=D
-
-// push constant 5000
-
-@5000
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-
-// pop pointer 1
-
-@SP
-M=M-1
-A=M
-D=M
-@THAT
-M=D
-
-// call Sys.main 0
-
-@returnval0
-D=A
-@SP
-M=M+1
-A=M-1
-M=D
-@LCL
-D=M
-@SP
-M=M+1
-A=M-1
-M=D
-@ARG
-D=M
-@SP
-M=M+1
-A=M-1
-M=D
-@THIS
-D=M
-@SP
-M=M+1
-A=M-1
-M=D
-@THAT
-D=M
-@SP
-M=M+1
-A=M-1
-M=D
-@SP
-D=M
-@5
-D=D-A
-@0
-D=D-A
-@ARG
-M=D
-@SP
-D=M
-@LCL
-M=D
-@Sys.main
-0;JEQ
-(returnval0)
-
-// pop temp 1
-
-@1
-D=A
-@5
-A=D+A
-D=A
-@addr
-M=D
-@SP
-M=M-1
-A=M
-D=M
-@addr
-A=M
-M=D
-
-// label LOOP
-
-(LOOP)
-
-// goto LOOP
-
-@LOOP
-0;JEQ
-
-// function Sys.main 5
 

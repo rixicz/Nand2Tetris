@@ -3,7 +3,7 @@ from pathlib import Path
 
 def reader(name: str):
     target = Path(f"vm_programs/{name}")
-    commands = []
+    commands = [] 
 
     # 1. Check if it is a file
     target_file = Path(f"vm_programs/{name}.vm")
@@ -456,10 +456,14 @@ def coder(commands: list, filename: str):
 
         current_func.append("\n")
 
-    reverted_functions = reversed([val for _, val in functions.items()])
+    for ins in functions["Sys.init"]:
+        asm_ins.append(ins)
+    functions["Sys.init"] = ""
+    reverted_functions = reversed([val for _, val in functions.items()])    
+
     for f in reverted_functions:
         for ins in f:
-            asm_ins.append(ins)    
+            asm_ins.append(ins)
 
     return asm_ins
 
