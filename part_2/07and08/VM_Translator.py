@@ -1,14 +1,50 @@
+import os
+from pathlib import Path
 
-def reader(filename: str):
-    with open("vm_programs/" + filename + ".vm", "r") as file:
-        commands = []
-        for line in file:
-            check_line = line.strip()
-            if line.startswith("/") or not check_line:
-                continue
-            commands.append(line)
-        
-        return commands
+def reader(name: str):
+    target = Path(f"vm_programs/{name}")
+    commands = []
+    
+    if not target.exists():
+        print(f"Error: '{name}' does not exist.")
+        return []
+
+    # 1. Check if it is a file
+    if target.is_file():
+        print(f"'{name}' is a file. Opening and reading contents:\n")
+        try:
+            with open(target, 'r', encoding='utf-8') as f:
+                print(f.read())
+        except Exception as e:
+            print(f"Could not read the file: {e}")
+
+    # 2. Check if it is a directory
+    elif target.is_dir():
+        print(f"'{name}' is a directory. Changing into it...")
+        try:
+            # Change the script's working directory
+            os.chdir(target)
+            
+            # Look for files inside this new directory
+            files = [f for f in Path.cwd().iterdir() if f.is_file()]
+
+            if files:
+                for i in range(0, len(files)):
+                    file = files[i]
+                    with open(file, 'r', encoding='utf-8') as f:
+                        for line in f:
+                            check_line = line.strip()
+                            if line.startswith("/") or not check_line:
+                                continue
+                            commands.append(line)
+            
+            else:
+                print("The directory is empty or contains no readable files.")
+                
+        except Exception as e:
+            print(f"Error navigating directory: {e}")
+
+    return commands
 
 def code_constant(command_list: list, current_func: list):
     current_func.append(f"@{command_list[2]}")
@@ -227,7 +263,7 @@ def ifgoto(c_list: list, current_func: list):
     current_func.append("D=M")
 
     current_func.append(f"@{c_list[1]}")
-    current_func.append("D;JGT")
+    current_func.append("D;JNE")
 
 def save_pointer_state(current_func: list, pointer: str):
     current_func.append(pointer)
@@ -259,6 +295,8 @@ def call(c_list: list, current_func: list, returnval: int):
     current_func.append("D=D-A")
     current_func.append(f"@{c_list[2]}")
     current_func.append("D=D-A") # repositions the ARG pointer
+    current_func.append("@ARG")
+    current_func.append("M=D")
 
     current_func.append("@SP")
     current_func.append("D=M")
@@ -270,7 +308,7 @@ def call(c_list: list, current_func: list, returnval: int):
 
 def function_label(c_list: list, current_func: list):
     current_func.append(f"({c_list[1]})")
-    for i in range(0, int(c_list[2]) + 1):
+    for i in range(0, int(c_list[2])):
         current_func.append("@SP")
         current_func.append("M=M+1")
         current_func.append("A=M-1")
@@ -310,10 +348,19 @@ def search_for_functions(commands: list):
             functions[cmd[1]] = []
 
     return functions
-    
+
+def set_memory_segments(asm_ins: list):
+    memory_segments = {"SP": 256, "LCL": 300, "ARG": 400}
+    for mem, addr in memory_segments.items():
+        asm_ins.append(f"@{addr}")
+        asm_ins.append("D=A")
+        asm_ins.append(f"@{mem}")
+        asm_ins.append("M=D")
+
 def coder(commands: list, filename: str):
     asm_ins = []
     current_func = []
+    set_memory_segments(asm_ins)
     functions = search_for_functions(commands)
     i = 0
     returnval = 0
@@ -419,11 +466,11 @@ def coder(commands: list, filename: str):
     return asm_ins
 
 filename = input("Please specify the filename: ")
-
+PROJECT_ROOT = Path(__file__).parent
 vm_commands = reader(filename)
 final_instructions = coder(vm_commands, filename)
-
-with open("asm_programs/" + filename + ".asm", "w") as file:
+output_path = PROJECT_ROOT / "asm_programs" / f"{filename}.asm"
+with open(output_path, "w") as file:
     for ins in final_instructions:
         if ins == "\n":
             file.write(ins)

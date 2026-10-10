@@ -1,8 +1,16 @@
-(Sys.init)
+@256
+D=A
 @SP
-M=M+1
-A=M-1
-M=0
+M=D
+@300
+D=A
+@LCL
+M=D
+@400
+D=A
+@ARG
+M=D
+(Sys.init)
 
 // // Computes fibonacci(4)
 
@@ -58,6 +66,8 @@ D=M
 D=D-A
 @1
 D=D-A
+@ARG
+M=D
 @SP
 D=M
 @LCL
@@ -70,16 +80,12 @@ M=D
 
 (END)
 
-// goto END  // loops infinitely
+// goto END
 
 @END
 0;JEQ
 
 (Main.fibonacci)
-@SP
-M=M+1
-A=M-1
-M=0
 
 // push argument 0
 
@@ -132,7 +138,7 @@ M=M-1
 A=M
 D=M
 @N_LT_2
-D;JGT
+D;JNE
 
 // goto N_GE_2
 
@@ -296,6 +302,8 @@ D=M
 D=D-A
 @1
 D=D-A
+@ARG
+M=D
 @SP
 D=M
 @LCL
@@ -374,6 +382,8 @@ D=M
 D=D-A
 @1
 D=D-A
+@ARG
+M=D
 @SP
 D=M
 @LCL
