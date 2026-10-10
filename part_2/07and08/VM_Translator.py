@@ -277,7 +277,7 @@ def save_pointer_state(current_func: list, pointer: str):
 
 def call(c_list: list, current_func: list, returnval: int):
     current_func.append(f"@returnval{returnval}")
-    current_func.append("D=M")
+    current_func.append("D=A")
     current_func.append("@SP")
     current_func.append("M=M+1")
     current_func.append("A=M-1")
@@ -330,7 +330,7 @@ def return_func(current_func: list):
     pointers = ["THAT", "THIS", "ARG", "LCL", "retAddr"]
     for i in range(1, 6):
         current_func.append(f"@{i}")
-        current_func.append("D=M")
+        current_func.append("D=A")
         current_func.append("@endFrame")
         current_func.append("D=M-D")          # endFrame - i
         current_func.append("A=D")
@@ -338,7 +338,8 @@ def return_func(current_func: list):
         current_func.append(f"@{pointers[i-1]}")    # retAddr = *(endframe - 5), THIS = *(endframe - 2) etc.
         current_func.append("M=D")
 
-    current_func.append("0;JEQ") # using goto generates unwanted duplication of @returnAddress
+    current_func.append("A=M")
+    current_func.append("0;JEQ")
 
 def search_for_functions(commands: list):
     functions = {}

@@ -31,7 +31,7 @@ M=M+1
 // call Main.fibonacci 1
 
 @returnval2
-D=M
+D=A
 @SP
 M=M+1
 A=M-1
@@ -187,7 +187,7 @@ D=M
 @SP
 M=D+1
 @1
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -195,7 +195,7 @@ D=M
 @THAT
 M=D
 @2
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -203,7 +203,7 @@ D=M
 @THIS
 M=D
 @3
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -211,7 +211,7 @@ D=M
 @ARG
 M=D
 @4
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -219,13 +219,14 @@ D=M
 @LCL
 M=D
 @5
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
 D=M
 @retAddr
 M=D
+A=M
 0;JEQ
 
 // label N_GE_2               // if n >= 2 returns fib(n - 2) + fib(n - 1)
@@ -267,7 +268,7 @@ M=M-D
 // call Main.fibonacci 1  // computes fib(n - 2)
 
 @returnval0
-D=M
+D=A
 @SP
 M=M+1
 A=M-1
@@ -347,7 +348,7 @@ M=M-D
 // call Main.fibonacci 1  // computes fib(n - 1)
 
 @returnval1
-D=M
+D=A
 @SP
 M=M+1
 A=M-1
@@ -426,7 +427,7 @@ D=M
 @SP
 M=D+1
 @1
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -434,7 +435,7 @@ D=M
 @THAT
 M=D
 @2
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -442,7 +443,7 @@ D=M
 @THIS
 M=D
 @3
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -450,7 +451,7 @@ D=M
 @ARG
 M=D
 @4
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -458,13 +459,14 @@ D=M
 @LCL
 M=D
 @5
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
 D=M
 @retAddr
 M=D
+A=M
 0;JEQ
 
 // function Sys.init 0
