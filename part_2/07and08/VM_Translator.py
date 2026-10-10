@@ -4,22 +4,11 @@ from pathlib import Path
 def reader(name: str):
     target = Path(f"vm_programs/{name}")
     commands = []
-    
-    if not target.exists():
-        print(f"Error: '{name}' does not exist.")
-        return []
 
     # 1. Check if it is a file
-    if target.is_file():
-        print(f"'{name}' is a file. Opening and reading contents:\n")
-        try:
-            with open(target, 'r', encoding='utf-8') as f:
-                print(f.read())
-        except Exception as e:
-            print(f"Could not read the file: {e}")
-
+    target_file = Path(f"vm_programs/{name}.vm")
     # 2. Check if it is a directory
-    elif target.is_dir():
+    if target.is_dir():
         print(f"'{name}' is a directory. Changing into it...")
         try:
             # Change the script's working directory
@@ -43,6 +32,14 @@ def reader(name: str):
                 
         except Exception as e:
             print(f"Error navigating directory: {e}")
+
+    elif target_file.is_file():
+        with open(target_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                check_line = line.strip()
+                if line.startswith("/") or not check_line:
+                    continue
+                commands.append(line)
 
     return commands
 

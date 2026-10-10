@@ -1,8 +1,16 @@
-(Sys.add12)
+@256
+D=A
 @SP
-M=M+1
-A=M-1
-M=0
+M=D
+@300
+D=A
+@LCL
+M=D
+@400
+D=A
+@ARG
+M=D
+(Sys.add12)
 
 // push constant 4002
 
@@ -99,7 +107,7 @@ D=M
 @SP
 M=D+1
 @1
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -107,7 +115,7 @@ D=M
 @THAT
 M=D
 @2
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -115,7 +123,7 @@ D=M
 @THIS
 M=D
 @3
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -123,7 +131,7 @@ D=M
 @ARG
 M=D
 @4
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -131,20 +139,17 @@ D=M
 @LCL
 M=D
 @5
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
 D=M
 @retAddr
 M=D
+A=M
 0;JEQ
 
 (Sys.main)
-@SP
-M=M+1
-A=M-1
-M=0
 @SP
 M=M+1
 A=M-1
@@ -298,7 +303,7 @@ M=M+1
 // call Sys.add12 1
 
 @returnval1
-D=M
+D=A
 @SP
 M=M+1
 A=M-1
@@ -333,6 +338,8 @@ D=M
 D=D-A
 @1
 D=D-A
+@ARG
+M=D
 @SP
 D=M
 @LCL
@@ -484,7 +491,7 @@ D=M
 @SP
 M=D+1
 @1
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -492,7 +499,7 @@ D=M
 @THAT
 M=D
 @2
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -500,7 +507,7 @@ D=M
 @THIS
 M=D
 @3
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -508,7 +515,7 @@ D=M
 @ARG
 M=D
 @4
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
@@ -516,22 +523,19 @@ D=M
 @LCL
 M=D
 @5
-D=M
+D=A
 @endFrame
 D=M-D
 A=D
 D=M
 @retAddr
 M=D
+A=M
 0;JEQ
 
 // function Sys.add12 0
 
 (Sys.init)
-@SP
-M=M+1
-A=M-1
-M=0
 
 // push constant 4000	// tests that THIS and THAT are handled correctly
 
@@ -574,7 +578,7 @@ M=D
 // call Sys.main 0
 
 @returnval0
-D=M
+D=A
 @SP
 M=M+1
 A=M-1
@@ -609,6 +613,8 @@ D=M
 D=D-A
 @0
 D=D-A
+@ARG
+M=D
 @SP
 D=M
 @LCL
