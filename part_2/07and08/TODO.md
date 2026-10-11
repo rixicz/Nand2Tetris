@@ -1,1 +1,0 @@
-1. Translate files one by one, so static does not get overwritten

@@ -48,12 +48,10 @@ def find_sys_and_create_asm(instructions: dict):
     asm_ins = []
     set_memory_segments(asm_ins)
     if "Sys.init" in instructions:
-        asm_ins.extend(instructions["Sys.init"])
-        instructions["Sys.init"] = ""
+        call(["call", "Sys.init", 0], asm_ins, 67000)
     for _, val in instructions.items():
         asm_ins.extend(val)
     return asm_ins
-
 
 def code_constant(command_list: list, current_func: list):
     current_func.append(f"@{command_list[2]}")
