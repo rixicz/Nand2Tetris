@@ -312,6 +312,15 @@ def function_label(c_list: list, current_func: list):
         current_func.append("M=0")
 
 def return_func(current_func: list):
+    current_func.append(f"@5")
+    current_func.append("D=A")
+    current_func.append("@endFrame")
+    current_func.append("D=M-D")          # endFrame - i
+    current_func.append("A=D")
+    current_func.append("D=M")
+    current_func.append(f"@retAddr")    # retAddr = *(endframe - 5)
+    current_func.append("M=D")
+
     current_func.append("@LCL")
     current_func.append("D=M")
     current_func.append("@endFrame")
@@ -332,7 +341,7 @@ def return_func(current_func: list):
         current_func.append("D=M-D")          # endFrame - i
         current_func.append("A=D")
         current_func.append("D=M")
-        current_func.append(f"@{pointers[i-1]}")    # retAddr = *(endframe - 5), THIS = *(endframe - 2) etc.
+        current_func.append(f"@{pointers[i-1]}")    # THIS = *(endframe - 2) etc.
         current_func.append("M=D")
 
     current_func.append("A=M")
