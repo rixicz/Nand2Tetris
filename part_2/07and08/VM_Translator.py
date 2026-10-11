@@ -480,7 +480,8 @@ def coder(commands: list, filename: str):
             return_func(current_func)
 
         current_func.append("\n")
-
+    if functions == {}:
+        return {"NoFunc": current_func}
     return functions
 
 filename = input("Please specify the filename: ")
