@@ -333,8 +333,8 @@ def return_func(current_func: list):
     current_func.append("@SP")
     current_func.append("M=D+1") # places the SP just after ARG
 
-    pointers = ["THAT", "THIS", "ARG", "LCL", "retAddr"]
-    for i in range(1, 6):
+    pointers = ["THAT", "THIS", "ARG", "LCL"]
+    for i in range(1, 5):
         current_func.append(f"@{i}")
         current_func.append("D=A")
         current_func.append("@endFrame")

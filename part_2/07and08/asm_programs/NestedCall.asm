@@ -200,6 +200,14 @@ M=D+M
 
 // return
 
+@5
+D=A
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
 @LCL
 D=M
 @endFrame
@@ -253,14 +261,6 @@ D=M-D
 A=D
 D=M
 @LCL
-M=D
-@5
-D=A
-@endFrame
-D=M-D
-A=D
-D=M
-@retAddr
 M=D
 A=M
 0;JEQ
@@ -584,6 +584,14 @@ M=D+M
 
 // return
 
+@5
+D=A
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
 @LCL
 D=M
 @endFrame
@@ -637,14 +645,6 @@ D=M-D
 A=D
 D=M
 @LCL
-M=D
-@5
-D=A
-@endFrame
-D=M-D
-A=D
-D=M
-@retAddr
 M=D
 A=M
 0;JEQ
