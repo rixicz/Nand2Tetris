@@ -34,5 +34,7 @@ Here is a step-by-step breakdown of how to test this code out:
 4. Load the file from the project folder
 5. Run it and check if my file matches the compare file
 
+## Contributors
 
+Even though it is a rather personal project, I invite contributors to have a look at the Assembler or VM translator. It could be a good contribution for someone new as there are a lot of optimalizations to be made.
 
