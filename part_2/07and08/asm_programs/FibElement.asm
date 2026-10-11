@@ -168,6 +168,14 @@ M=M+1
 D=M
 @endFrame
 M=D
+@5
+D=A
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
 @0
 D=A
 @ARG
@@ -218,14 +226,7 @@ A=D
 D=M
 @LCL
 M=D
-@5
-D=A
-@endFrame
-D=M-D
-A=D
-D=M
 @retAddr
-M=D
 A=M
 0;JEQ
 
@@ -408,6 +409,14 @@ M=D+M
 D=M
 @endFrame
 M=D
+@5
+D=A
+@endFrame
+D=M-D
+A=D
+D=M
+@retAddr
+M=D
 @0
 D=A
 @ARG
@@ -458,14 +467,7 @@ A=D
 D=M
 @LCL
 M=D
-@5
-D=A
-@endFrame
-D=M-D
-A=D
-D=M
 @retAddr
-M=D
 A=M
 0;JEQ
 

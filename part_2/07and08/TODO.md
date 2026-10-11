@@ -1,1 +1,1 @@
-1. The problem is that in NestedCall, we do not return to Sys.init from Sys.main but instead, we return to the beginning of Sys.main again.
+1. Translate files one by one, so static does not get overwritten

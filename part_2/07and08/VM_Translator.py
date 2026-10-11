@@ -3,45 +3,56 @@ from pathlib import Path
 
 def reader(name: str):
     target = Path(f"vm_programs/{name}")
-    commands = [] 
+    instructions = {}
 
     # 1. Check if it is a file
     target_file = Path(f"vm_programs/{name}.vm")
     # 2. Check if it is a directory
     if target.is_dir():
         print(f"'{name}' is a directory. Changing into it...")
-        try:
-            # Change the script's working directory
-            os.chdir(target)
-            
-            # Look for files inside this new directory
-            files = [f for f in Path.cwd().iterdir() if f.is_file()]
-
-            if files:
-                for i in range(0, len(files)):
-                    file = files[i]
-                    with open(file, 'r', encoding='utf-8') as f:
-                        for line in f:
-                            check_line = line.strip()
-                            if line.startswith("/") or not check_line:
-                                continue
-                            commands.append(line)
-            
-            else:
-                print("The directory is empty or contains no readable files.")
-                
-        except Exception as e:
-            print(f"Error navigating directory: {e}")
+        # Change the script's working directory
+        os.chdir(target)
+        print("in dir")
+        
+        # Look for files inside this new directory
+        files = [f for f in Path.cwd().iterdir() if f.is_file()]
+        if files:
+            for i in range(0, len(files)):
+                file = files[i]
+                commands = []
+                with open(file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        check_line = line.strip()
+                        if line.startswith("/") or not check_line:
+                            continue
+                        commands.append(line)
+                print("extending instructions")
+                instructions.update(coder(commands, file.name))
+        
+        else:
+            print("The directory is empty or contains no readable files.")
 
     elif target_file.is_file():
         with open(target_file, 'r', encoding='utf-8') as f:
+            commands = []
             for line in f:
                 check_line = line.strip()
                 if line.startswith("/") or not check_line:
                     continue
                 commands.append(line)
+        instructions = (coder(commands, target_file.name))
 
-    return commands
+    return instructions
+
+def find_sys_and_create_asm(instructions: dict):
+    asm_ins = []
+    set_memory_segments(asm_ins)
+    asm_ins.extend(instructions["Sys.init"])
+    instructions["Sys.init"] = ""
+    for _, val in instructions.items():
+        asm_ins.extend(val)
+    return asm_ins
+
 
 def code_constant(command_list: list, current_func: list):
     current_func.append(f"@{command_list[2]}")
@@ -91,7 +102,7 @@ def pop_static(c_list: list, current_func: list, filename: str):
     current_func.append("M=M-1")
     current_func.append("A=M")
     current_func.append("D=M")
-
+    print(f"Pop static: {filename}")
     current_func.append(f"@{filename}.{c_list[2]}")
     current_func.append("M=D")
 
@@ -367,10 +378,9 @@ def set_memory_segments(asm_ins: list):
         asm_ins.append("M=D")
 
 def coder(commands: list, filename: str):
-    asm_ins = []
     current_func = []
-    set_memory_segments(asm_ins)
     functions = search_for_functions(commands)
+    print(functions)
     i = 0
     returnval = 0
     for c in commands:
@@ -418,6 +428,7 @@ def coder(commands: list, filename: str):
                 pop_arg_local_this_that(int(c_list[2]), current_func, "@THAT")
         
             elif c_list[1] == "static":
+                print(f"Coder: {filename}")
                 pop_static(c_list, current_func, filename)
 
             elif c_list[1] == "temp":
@@ -467,21 +478,12 @@ def coder(commands: list, filename: str):
 
         current_func.append("\n")
 
-    for ins in functions["Sys.init"]:
-        asm_ins.append(ins)
-    functions["Sys.init"] = ""
-    reverted_functions = reversed([val for _, val in functions.items()])    
-
-    for f in reverted_functions:
-        for ins in f:
-            asm_ins.append(ins)
-
-    return asm_ins
+    return functions
 
 filename = input("Please specify the filename: ")
 PROJECT_ROOT = Path(__file__).parent
-vm_commands = reader(filename)
-final_instructions = coder(vm_commands, filename)
+functions = reader(filename)
+final_instructions = find_sys_and_create_asm(functions)
 output_path = PROJECT_ROOT / "asm_programs" / f"{filename}.asm"
 with open(output_path, "w") as file:
     for ins in final_instructions:

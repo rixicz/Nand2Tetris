@@ -1,4 +1,15 @@
-
+@256
+D=A
+@SP
+M=D
+@300
+D=A
+@LCL
+M=D
+@400
+D=A
+@ARG
+M=D
 (Sys.init)
 
 // push constant 4000	// tests that THIS and THAT are handled correctly
