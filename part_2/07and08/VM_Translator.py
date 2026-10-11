@@ -312,40 +312,42 @@ def function_label(c_list: list, current_func: list):
         current_func.append("M=0")
 
 def return_func(current_func: list):
-    current_func.append(f"@5")
-    current_func.append("D=A")
-    current_func.append("@endFrame")
-    current_func.append("D=M-D")          # endFrame - i
-    current_func.append("A=D")
-    current_func.append("D=M")
-    current_func.append(f"@retAddr")    # retAddr = *(endframe - 5)
-    current_func.append("M=D")
-
     current_func.append("@LCL")
     current_func.append("D=M")
     current_func.append("@endFrame")
-    current_func.append("M=D") # declares the endFrame
+    current_func.append("M=D")
 
-    pop_arg_local_this_that(0, current_func, "@ARG") # pop arg 0
+    current_func.append("@5")
+    current_func.append("D=A")
+    current_func.append("@endFrame")
+    current_func.append("D=M-D")
+    current_func.append("A=D")
+    current_func.append("D=M")
+    current_func.append("@retAddr")
+    current_func.append("M=D")
+
+    pop_arg_local_this_that(0, current_func, "@ARG")
 
     current_func.append("@ARG")
     current_func.append("D=M")
     current_func.append("@SP")
-    current_func.append("M=D+1") # places the SP just after ARG
+    current_func.append("M=D+1")
 
     pointers = ["THAT", "THIS", "ARG", "LCL"]
     for i in range(1, 5):
         current_func.append(f"@{i}")
         current_func.append("D=A")
         current_func.append("@endFrame")
-        current_func.append("D=M-D")          # endFrame - i
+        current_func.append("D=M-D")
         current_func.append("A=D")
         current_func.append("D=M")
-        current_func.append(f"@{pointers[i-1]}")    # THIS = *(endframe - 2) etc.
+        current_func.append(f"@{pointers[i-1]}")
         current_func.append("M=D")
 
+    current_func.append("@retAddr")
     current_func.append("A=M")
     current_func.append("0;JEQ")
+
 
 def search_for_functions(commands: list):
     functions = {}

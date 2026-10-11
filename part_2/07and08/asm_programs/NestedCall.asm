@@ -1,15 +1,4 @@
-@256
-D=A
-@SP
-M=D
-@300
-D=A
-@LCL
-M=D
-@400
-D=A
-@ARG
-M=D
+
 (Sys.init)
 
 // push constant 4000	// tests that THIS and THAT are handled correctly
@@ -200,6 +189,10 @@ M=D+M
 
 // return
 
+@LCL
+D=M
+@endFrame
+M=D
 @5
 D=A
 @endFrame
@@ -207,10 +200,6 @@ D=M-D
 A=D
 D=M
 @retAddr
-M=D
-@LCL
-D=M
-@endFrame
 M=D
 @0
 D=A
@@ -262,6 +251,7 @@ A=D
 D=M
 @LCL
 M=D
+@retAddr
 A=M
 0;JEQ
 
@@ -584,6 +574,10 @@ M=D+M
 
 // return
 
+@LCL
+D=M
+@endFrame
+M=D
 @5
 D=A
 @endFrame
@@ -591,10 +585,6 @@ D=M-D
 A=D
 D=M
 @retAddr
-M=D
-@LCL
-D=M
-@endFrame
 M=D
 @0
 D=A
@@ -646,6 +636,7 @@ A=D
 D=M
 @LCL
 M=D
+@retAddr
 A=M
 0;JEQ
 
