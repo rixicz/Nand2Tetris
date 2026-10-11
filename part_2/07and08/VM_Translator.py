@@ -47,8 +47,9 @@ def reader(name: str):
 def find_sys_and_create_asm(instructions: dict):
     asm_ins = []
     set_memory_segments(asm_ins)
-    asm_ins.extend(instructions["Sys.init"])
-    instructions["Sys.init"] = ""
+    if "Sys.init" in instructions:
+        asm_ins.extend(instructions["Sys.init"])
+        instructions["Sys.init"] = ""
     for _, val in instructions.items():
         asm_ins.extend(val)
     return asm_ins
@@ -370,12 +371,14 @@ def search_for_functions(commands: list):
     return functions
 
 def set_memory_segments(asm_ins: list):
-    memory_segments = {"SP": 256, "LCL": 300, "ARG": 400}
-    for mem, addr in memory_segments.items():
-        asm_ins.append(f"@{addr}")
-        asm_ins.append("D=A")
-        asm_ins.append(f"@{mem}")
-        asm_ins.append("M=D")
+    dec = input("Set memory segments? (y/n): ")
+    if dec == "y":
+        memory_segments = {"SP": 256, "LCL": 300, "ARG": 400}
+        for mem, addr in memory_segments.items():
+            asm_ins.append(f"@{addr}")
+            asm_ins.append("D=A")
+            asm_ins.append(f"@{mem}")
+            asm_ins.append("M=D")
 
 def coder(commands: list, filename: str):
     current_func = []
