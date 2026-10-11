@@ -16,8 +16,8 @@ It is divided into two major parts containing 12 projects in total.
 | 05      | Computer Architecture | Hardware Simulator | Done :white_check_mark: | 
 | 06      | Assembler             | Assembler | Done :white_check_mark: |
 | 07      | VM Translator Beginner       | CPU Emulator | Done :white_check_mark: |
-| 08      | VM Translator Advanced       | CPU Emulator | In Progress :clock12: |
-| 09      | Jack Language Specification | Jack Compiler | Waiting... |
+| 08      | VM Translator Advanced       | CPU Emulator | Done :white_check_mark: |
+| 09      | Jack Language Specification | Jack Compiler | In Progress :clock12: |
 | 10      | Compiler I  | Jack Compiler | Waiting... |
 | 11      | Compiler II | Jack Compiler | Waiting... |
 | 12      | Operating System | Jack Compiler | Waiting... |
